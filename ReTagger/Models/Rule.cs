@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ReTagger
 {
@@ -13,7 +11,7 @@ namespace ReTagger
         {
             Conditions = new List<Tag>();
             Actions = new List<Modification>();
-        }
+        }        
     
     }
 }

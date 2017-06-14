@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ReTagger": {
+      "commandName": "Project",
+      "commandLineArgs": "D:\\plex\\Music\\tagUpdates.txt d:\\testing"
+    }
+  }
+}
