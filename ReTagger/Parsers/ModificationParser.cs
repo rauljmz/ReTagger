@@ -32,11 +32,11 @@ namespace ReTagger.Parsers
                         mod.Operation = Operations.Remove;
                         break;
                     default:
-                        throw new ParsingException() { OffendingInput = input };                        
+                        throw new ParsingException(input);
                 }
                 return mod;
             }
-            throw new ParsingException() { OffendingInput = input };
+            throw new ParsingException(input);
         }
     }
 }

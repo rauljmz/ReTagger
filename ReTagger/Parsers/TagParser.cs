@@ -20,7 +20,7 @@ namespace ReTagger.Parsers
                     };
                 }
             }
-            throw new ParsingException() { OffendingInput = input };
+            throw new ParsingException(input);
         }
     }
 }

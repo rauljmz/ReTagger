@@ -36,9 +36,9 @@ namespace ReTagger.Parsers
                 .AddState(new State<string>(StateIDs.ExtraConditions, input => '&' == input[0], SetConditionTag, new object[] { StateIDs.ExtraConditions, StateIDs.ReadFirstAction, StateIDs.Error2 }))
                 .AddState(new State<string>(StateIDs.ReadFirstAction, input => new char[] { '=', '+', '-' }.Contains(input[0]), SetActionTag, new object[] { StateIDs.ReadExtraActions, StateIDs.MatchQueryTag, StateIDs.Error3 }), true)
                 .AddState(new State<string>(StateIDs.ReadExtraActions, input => '+' == input[0], SetActionTag, new object[] { StateIDs.ReadExtraActions, StateIDs.MatchQueryTag, StateIDs.Error3 }), true)
-                .AddState(new State<string>(StateIDs.Error1, input => new char[] { '=', '+', '-' }.Contains(input[0]), input => throw new ParsingException() { OffendingInput = input }, null))
-                .AddState(new State<string>(StateIDs.Error2, input => new char[] { '@' }.Contains(input[0]), input => throw new ParsingException() { OffendingInput = input }, null))
-                .AddState(new State<string>(StateIDs.Error3, input => new char[] { '=', '-' }.Contains(input[0]), input => throw new ParsingException() { OffendingInput = input }, null));
+                .AddState(new State<string>(StateIDs.Error1, input => new char[] { '=', '+', '-' }.Contains(input[0]), input => throw new ParsingException(input), null))
+                .AddState(new State<string>(StateIDs.Error2, input => new char[] { '@' }.Contains(input[0]), input => throw new ParsingException(input), null))
+                .AddState(new State<string>(StateIDs.Error3, input => new char[] { '=', '-' }.Contains(input[0]), input => throw new ParsingException(input), null));
         }
 
         public IEnumerable<Rule> Parse(IEnumerable<string> lines)
@@ -57,7 +57,7 @@ namespace ReTagger.Parsers
             {
                 return _result;
             }
-            throw new ParsingException();
+            throw new ParsingException("at the end of the file");
         }
 
         private void SetInitialConditionTag(string input)
