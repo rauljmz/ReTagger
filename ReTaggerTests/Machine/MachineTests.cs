@@ -69,5 +69,16 @@ namespace ReTaggerTests.Machine
             Assert.True(machine.IsInValidFinalState());
         }
 
+        [Fact]
+        public void AcceptsNullNextStates()
+        {
+            var A = new State<object>(1, _ => false, null, null);
+            var machine = new Machine<object>().AddState(A, false);
+            machine.Next(null);
+            //it should not throw an exception
+            Assert.True(true);
+
+        }
+
     }
 }

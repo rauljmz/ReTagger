@@ -43,16 +43,16 @@ namespace ReTagger.StateMachine
             SetState(state.StateID);
         }
         
+        public void SetState(object obj)
+        {
+            _currentStateID = obj;
+        }     
+        
         public bool IsInValidFinalState()
         {
             return _validEndStateIDs.Contains(_currentStateID);
         }
-
-        public void SetState(object obj)
-        {
-            _currentStateID = obj;
-        }        
-
+        
         private State<T> GetState(object id)
         {
             return _states[id];
@@ -61,7 +61,7 @@ namespace ReTagger.StateMachine
         public void Next(T input)
         {            
             var currentState = GetState(_currentStateID);
-            var nextStateID = currentState.NextValidStates.FirstOrDefault(st => GetState(st).Guard(input));
+            var nextStateID = currentState.NextValidStates?.FirstOrDefault(st => GetState(st).Guard(input));
             if( nextStateID != null)
             {
                 GetState(nextStateID).Action?.Invoke(input);
