@@ -2,6 +2,7 @@ using Xunit;
 using ReTagger;
 using System.Collections.Generic;
 using ReTagger.Parsers;
+using System.Linq;
 
 namespace ReTaggerTests
 {
@@ -45,6 +46,16 @@ namespace ReTaggerTests
             var result = ParseLines(data);
             Assert.NotEmpty(result);
         }
-        
+
+        [Theory]
+        [InlineData("@Genre=Piano\n=GENRE=Music\n@Genre=Music\n=GENRE=Musica",2)]
+        [InlineData("@Genre=Piano\n=GENRE=Music\n+GENRE=Another\n@Genre=Music\n=GENRE=Musica",2) ]
+        [InlineData("@Genre=Piano\n=GENRE=Music\n+GENRE=Another\n@Genre=Music\n=GENRE=Musica\n@ARTIST=foo\n=ARTIST=bar", 3)]
+        public void CapturesMoreGroups(string data, int count)
+        {
+            var result = ParseLines(data);
+            Assert.Equal(count, result.Count());
+        }
+
     }
 }
