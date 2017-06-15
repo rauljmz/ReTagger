@@ -1,52 +1,55 @@
 ﻿using ReTagger.DirectoryManipulation;
+using ReTagger.OptionsParsing;
 using ReTagger.Parsers;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace ReTagger
 {
     class Program
     {
-        static bool _simulation = false;
+        static ApplicationOptions _applicationOptions;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
-            if (args.Length < 2 || !File.Exists(args[0]) || !Directory.Exists(args[1]))
-            {
-                PrintUsage();
-                return;
-            }
+            Console.WriteLine("ReTagger");
 
-            for (var i = args.Length - 1; i > 1; i--)
+            try
             {
-                if (args[i].Equals("-simulate", StringComparison.CurrentCultureIgnoreCase))
+                _applicationOptions = OptionsParser.Parse<ApplicationOptions>(args);
+                if (!_applicationOptions.Validate())
                 {
-                    _simulation = true;
-                    break;
+                    Console.WriteLine("One of the options is incorrect");
+                    Console.WriteLine(_applicationOptions.Usage());
+                    return;
                 }
             }
+            catch (OptionsParsingException ex)
+            {
+                Console.WriteLine(ex.Message);
+                return;                
+            }
+
+            
+
             IEnumerable<Rule> rules;
             try
             {
                 var fileParser = new TextParser();
                 var fileReader = new FileReader();
-                rules = fileParser.Parse(fileReader.GetLines(args[0]));
+                rules = fileParser.Parse(fileReader.GetLines(_applicationOptions.UpdateFile));
 
-                //var recursiveTraversal = args.Length == 3 ? new RecursiveFilteredDirectoryTraversal(args[2]) : new RecursiveFilteredDirectoryTraversal();
-                var recursiveTraversal = new RecursiveFilteredDirectoryTraversal("*.flac");
+                var recursiveTraversal = new RecursiveFilteredDirectoryTraversal(_applicationOptions.Filter);
 
                 var count = 0;
-                foreach (var file in recursiveTraversal.Traverse(args[1]))
+                foreach (var file in recursiveTraversal.Traverse(_applicationOptions.Directory))
                 {
                     if (ProcessFile(file, rules)) count++;
                 }
                 
                 
                 Console.Out.WriteLine($"modified {count} files.");
-                if (_simulation)
+                if (_applicationOptions.Simulate)
                 {
                     Console.Out.WriteLine("in SIMULATION mode no changes made");
                 }
@@ -71,7 +74,7 @@ namespace ReTagger
             if (needsToSave)
             {
                 Console.WriteLine($"Saving file {file}");
-                if (!_simulation)
+                if (!_applicationOptions.Simulate)
                 {
                     tagfile.Save();
                 }
@@ -79,10 +82,6 @@ namespace ReTagger
             }
             return false;
         }
-
-        private static void PrintUsage()
-        {
-            Console.WriteLine("Usage: ReTagger UpdateFile Directory [-simulate]");
-        }
+        
     }
 }
