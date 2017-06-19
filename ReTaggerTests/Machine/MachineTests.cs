@@ -39,7 +39,7 @@ namespace ReTaggerTests.Machine
         }
 
         [Fact]
-        public void NextDoesExectuesActionIfGuardFails()
+        public void NextDoesNotExecuteActionIfGuardFails()
         {
             bool executed = false;
             var A = new State<object>(1, _ => false, _ => executed = true, new object[] { 1 });
